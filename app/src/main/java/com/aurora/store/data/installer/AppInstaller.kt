@@ -31,7 +31,6 @@ import com.aurora.extensions.isOAndAbove
 import com.aurora.extensions.isPAndAbove
 import com.aurora.extensions.isSAndAbove
 import com.aurora.store.BuildConfig
-import com.aurora.store.data.installer.DhizukuInstaller.Companion.DHIZUKU_PACKAGE_NAME
 import com.aurora.store.data.installer.ShizukuInstaller.Companion.SHIZUKU_PACKAGE_NAME
 import com.aurora.store.data.installer.base.IInstaller
 import com.aurora.store.data.model.Installer
@@ -40,7 +39,6 @@ import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.PackageUtil.hasMicroGCompanion
 import com.aurora.store.util.Preferences
 import com.aurora.store.util.Preferences.PREFERENCE_INSTALLER_ID
-import com.rosan.dhizuku.api.Dhizuku
 import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -91,7 +89,7 @@ class AppInstaller @Inject constructor(
                 if (hasAppManager(context)) AMInstaller.installerInfo else null,
                 if (hasShizukuOrSui(context)) ShizukuInstaller.installerInfo else null,
                 if (hasMicroGCompanion(context)) MicroGInstaller.installerInfo else null,
-                if (hasDhizuku(context) && hasDhizukuPerm(context)) DhizukuInstaller.installerInfo else null
+                DhizukuInstaller.installerInfo
             )
         }
 
@@ -152,7 +150,7 @@ class AppInstaller @Inject constructor(
 
                 Installer.DEVICE_OWNER -> isDeviceOwner(context)
 
-                Installer.DHIZUKU -> isOAndAbove && hasDhizuku(context) && hasDhizukuPerm(context)
+                Installer.DHIZUKU -> isOAndAbove
             }
         }
 
@@ -179,16 +177,6 @@ class AppInstaller @Inject constructor(
 
         fun hasShizukuPerm(): Boolean =
             Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-
-        fun hasDhizuku(context: Context): Boolean = isOAndAbove &&
-            PackageUtil.isInstalled(context, DHIZUKU_PACKAGE_NAME)
-
-        fun hasDhizukuPerm(context: Context): Boolean = try {
-            Dhizuku.init(context)
-            Dhizuku.isPermissionGranted()
-        } catch (e: Exception) {
-            false
-        }
 
         fun uninstall(context: Context, packageName: String) {
             val intent = Intent().apply {
@@ -250,11 +238,7 @@ class AppInstaller @Inject constructor(
                 defaultInstaller
             }
 
-            Installer.DHIZUKU -> if (hasDhizuku(context) && hasDhizukuPerm(context)) {
-                dhizukuInstaller
-            } else {
-                defaultInstaller
-            }
+            Installer.DHIZUKU -> dhizukuInstaller
         }
     }
 }

@@ -142,11 +142,7 @@ class InstallerViewModel @Inject constructor(
                 }
 
                 Installer.DHIZUKU -> {
-                    if (!AppInstaller.hasDhizuku(context) || !AppInstaller.hasDhizukuPerm(context)) {
-                        Log.e(TAG, "Trying to set Dhizuku installer without appropriate setup")
-                        _error.emit(context.getString(R.string.installer_dhizuku_unavailable))
-                        return@launch
-                    }
+                    Log.i(TAG, "Setting Dhizuku installer without availability pre-check")
                 }
 
                 else -> Log.i(TAG, "Trying to set ${installer.name} installer without any checks")

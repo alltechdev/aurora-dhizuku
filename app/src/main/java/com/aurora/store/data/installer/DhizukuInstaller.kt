@@ -64,7 +64,7 @@ class DhizukuInstaller @Inject constructor(
 
     companion object {
         const val DHIZUKU_PACKAGE_NAME = "com.rosan.dhizuku"
-
+        
         val installerInfo: InstallerInfo
             get() = InstallerInfo(
                 id = 8,
@@ -109,17 +109,23 @@ class DhizukuInstaller @Inject constructor(
         return installer
     }
 
+
+    private fun resolveDhizukuOwnerPackageName(): String = runCatching {
+        Dhizuku.getOwnerComponent().packageName
+    }.getOrElse {
+        DHIZUKU_PACKAGE_NAME
+    }
     private fun getPackageInstaller(): PackageInstaller? {
         cachedPackageInstaller?.let { return it }
 
         val iPackageInstaller = getIPackageInstaller()
         val installer = if (isSAndAbove) {
             Refine.unsafeCast<PackageInstaller>(
-                PackageInstallerHidden(iPackageInstaller, DHIZUKU_PACKAGE_NAME, null, 0)
+                PackageInstallerHidden(iPackageInstaller, resolveDhizukuOwnerPackageName(), null, 0)
             )
         } else if (isOAndAbove) {
             Refine.unsafeCast<PackageInstaller>(
-                PackageInstallerHidden(iPackageInstaller, DHIZUKU_PACKAGE_NAME, 0)
+                PackageInstallerHidden(iPackageInstaller, resolveDhizukuOwnerPackageName(), 0)
             )
         } else {
             null
@@ -166,16 +172,6 @@ class DhizukuInstaller @Inject constructor(
         // Ensure Dhizuku is initialized before each install
         if (!ensureDhizukuInit()) {
             Log.e(TAG, "Failed to initialize Dhizuku for installation")
-            postError(
-                packageName,
-                context.getString(R.string.installer_status_failure),
-                context.getString(R.string.installer_dhizuku_unavailable)
-            )
-            return
-        }
-
-        if (!Dhizuku.isPermissionGranted()) {
-            Log.e(TAG, "Dhizuku permission not granted")
             postError(
                 packageName,
                 context.getString(R.string.installer_status_failure),

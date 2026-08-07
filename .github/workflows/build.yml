@@ -1,0 +1,39 @@
+name: Build Android APK
+
+# מגדיר שהתהליך ירוץ אוטומטית בכל דחיפה (Push) לענפים main או master
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # הגדרת סביבת Java 21 שמתאימה לפרויקט שלך
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle # שומר מטמון כדי להאיץ את הבניות הבאות
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # פקודת הבנייה שכבר גילינו שעובדת
+      - name: Build Vanilla Debug APK
+        run: ./gradlew assembleVanillaDebug
+
+      # העלאת ה-APK המוכן כדי שתוכל להוריד אותו מהאתר
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aurora-vanilla-debug
+          path: app/build/outputs/apk/vanilla/debug/*.apk

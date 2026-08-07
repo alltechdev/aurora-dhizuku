@@ -559,4 +559,6 @@
     <!-- Misc -->
     <string name="loading">Loading in progress</string>
     <string name="page">Page <xliff:g id="number">%1$d</xliff:g></string>
+    <string name="managed_hide_screenshots_title">Hide app screenshots section</string>
+    <string name="managed_hide_screenshots_desc">When enabled, screenshot previews are hidden from app details pages.</string>
 </resources>

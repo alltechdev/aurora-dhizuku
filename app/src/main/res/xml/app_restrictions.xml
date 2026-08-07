@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+    <restriction
+        android:key="managed_hide_app_details_screenshots"
+        android:title="@string/managed_hide_screenshots_title"
+        android:description="@string/managed_hide_screenshots_desc"
+        android:restrictionType="bool"
+        android:defaultValue="false" />
+</restrictions>
